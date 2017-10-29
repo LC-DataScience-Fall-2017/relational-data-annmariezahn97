@@ -180,6 +180,74 @@ flights %>%
 
 The eastern coast expereinced a lot of delays due to two derechos, which contained high winds. 
 
-###Excersize 4: pg. 186-187, #'s 1-5
+###Excersize 4: pg. 191 #'s 1-6
 
 ######1. 
+
+```{r ex4.1}
+
+anti_join(flights, planes, by = "tailnum") %>%
+  group_by(carrier) %>%
+  count() 
+
+```
+It seems that mainly AA and MQ have tailnums that are not in the planes table.
+
+######2. 
+
+```{r ex4.2}
+
+planes_100_plus_flights <- flights %>%
+  group_by(tailnum) %>%
+  count() %>%
+  filter(n > 100)
+
+semi_join(flights, planes_100_plus_flights, by = "tailnum")
+
+```
+
+######3. 
+
+```{r ex4.3}
+
+fueleconomy::vehicles %>%
+  semi_join(fueleconomy::common)
+
+```
+
+######4. 
+
+```{r ex4.4}
+
+
+
+```
+
+######5. 
+
+```{r ex4.5}
+
+anti_join(flights, airports, by = c("dest" = "faa"))
+
+anti_join(airports, flights, by = c("faa" = "dest"))
+
+```
+
+`anti_join(flights, airports, by = c("dest" = "faa"))` gives us all the flight records for the destinations that are not in the airports table.
+
+`anti_join(airports, flights, by = c("faa" = "dest"))` gives us all the airport records for airports that were not destinations in the flights table.
+
+######6. 
+
+```{r ex4.6}
+
+flights %>%
+  group_by(tailnum, carrier) %>%
+  count() %>%
+  group_by(tailnum) %>%
+  count() %>%
+  filter(nn > 1)
+
+```
+
+There is not an implicit relationship between a plane and airline. There are 17 planes that are flown by different airlines (not including NA). 
