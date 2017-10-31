@@ -9,6 +9,7 @@ output: html_document
 library(tidyverse)
 library(nycflights13)
 library(maps)
+library(zoo)
 ```
 
 ###Exersizes 1: pg 174-175, #'s 1-4
@@ -17,9 +18,9 @@ library(maps)
 
 You want to draw the route each plane flies from its origin to its destination.
 
-Necesary Variables: origin, destination, latitude, longitude 
+Necessary Variables: origin, destination, latitude, longitude 
 
-Necesary Tables to combine: airports, planes
+Necessary Tables to combine: airports, planes
 
 ######2.
 
@@ -160,7 +161,7 @@ ggplot(data = flights3, aes(x = dep_delay)) + geom_jitter(aes(y=wind_gust))
 
 ```
 
-It looks like temp, visibility, and percipitation all factor into the likelihood of a delay.
+It looks like temp, visibility, and precipitation all factor into the likelihood of a delay.
 
 ######5. 
 
@@ -178,7 +179,7 @@ flights %>%
 
 ```
 
-The eastern coast expereinced a lot of delays due to two derechos, which contained high winds. 
+The eastern coast experienced a lot of delays due to two derechos, which contained high winds. 
 
 ###Excersize 4: pg. 191 #'s 1-6
 
@@ -191,6 +192,7 @@ anti_join(flights, planes, by = "tailnum") %>%
   count() 
 
 ```
+
 It seems that mainly AA and MQ have tailnums that are not in the planes table.
 
 ######2. 
@@ -219,9 +221,16 @@ fueleconomy::vehicles %>%
 
 ```{r ex4.4}
 
-
+flights4 <- flights %>% 
+  group_by(month, day, hour) %>% 
+  summarize(ave_delay=mean(dep_delay, na.rm=TRUE)) %>% 
+  ungroup() %>% 
+  mutate(roll48_delay = rollmean(ave_delay,40, align="left", fill=NA_real_)) %>%
+  arrange(desc(roll48_delay))
 
 ```
+
+January 29st- February 1st had a lot of delays. There was a severe weather outbreak in the south east that lead to several tornadoes on these days. Also there was a big snow storm to the north. 
 
 ######5. 
 
